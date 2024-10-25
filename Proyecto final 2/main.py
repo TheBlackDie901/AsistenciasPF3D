@@ -1,152 +1,186 @@
 import streamlit as st
 import database as db
+from datetime import datetime, timedelta
 
-# Crear tablas
 db.crear_tablas()
 
-# Crear usuarios
-if db.obtener_usuario("admin@escuela.com", "admin123") is None:
-    db.crear_usuario("Admin", "admin", "admin@escuela.com", "admin123")
-    
-if db.obtener_usuario("walter@escuela.com", "walter123") is None:
-    db.crear_usuario("Walter", "maestro", "walter@escuela.com", "walter123")
-    
-if db.obtener_usuario("alumno@escuela.com", "alumno123") is None:
-    db.crear_usuario("Carlos López", "alumno", "alumno@escuela.com", "alumno123")
+# Jefes de grupo
+db.crear_usuario("Miguel Ángel Ortiz Torres", "admin", "Miguel@ucol.mx", "Miguel123")  # ICI
+db.crear_usuario("Cesar Eduardo Zepeda Gorrocino", "admin", "Cesar@ucol.mx", "Cesar123")  # IME
+db.crear_usuario("Michelle Rosales Sánchez", "admin", "Michelle@ucol.mx", "Michelle123")  # IM
+db.crear_usuario("Panfilo Gutierrez Alvarez Diaz","admin","Panfilo@ucol.mx","Panfilo123") #ISET
 
-# login
+
+# ICI
+db.crear_usuario("Juan Antonio Diaz Hernández", "maestro", "Juan@ucol.mx", "Juan123")
+db.crear_usuario("Walter Alexander Mata López", "maestro", "Walter@ucol.mx", "Walter123")
+db.crear_usuario("Carlos Adrián Bricio Chapula", "maestro", "Carlos@ucol.mx", "Carlos123")
+db.crear_usuario("Oscar Octavio Ochoa Zúñiga", "maestro", "Oscar@ucol.mx", "Oscar123")
+db.crear_usuario("Elizabeth Santiago Hernández", "maestro", "Elizabeth@ucol.mx", "Elizabeth123")
+db.crear_usuario("David Alejandro Sierra Andrade", "maestro", "David@ucol.mx", "David123")
+db.crear_usuario("Luis Eduardo Moran López", "maestro", "Luis@ucol.mx", "Luis123")
+
+# ISET
+db.crear_usuario("Vazquez Gonzales Cruz Ernesto", "maestro", "Vazquez@ucol.mx", "Vazquez123")
+db.crear_usuario("Martines Camera Edgar", "maestro", "Edgar@ucol.mx", "Edgar123")
+db.crear_usuario("Francisco Manuel Soto Ochoa", "maestro", "Francisco@ucol.mx", "Francisco123")
+db.crear_usuario("Luis Daniel Benavides Sanches", "maestro", "LuisBenavides@ucol.mx", "LuisBenavides123")
+
+# IME
+db.crear_usuario("Jaime Arroyo Ledesma", "maestro", "Jaime@ucol.mx", "Jaime123")
+db.crear_usuario("Pablo Armando Alcaraz Valencia", "maestro", "Pablo@ucol.mx", "Pablo123")
+db.crear_usuario("Sergio Llamas Zamorano", "maestro", "Sergio@ucol.mx", "Sergio123")
+db.crear_usuario("Selene Cárdenas Rodríguez", "maestro", "Selene@ucol.mx", "Selene123")
+db.crear_usuario("José Alberto García Jiménez", "maestro", "Jose@ucol.mx", "Jose123")
+db.crear_usuario("Manfredo Paredes Jacquez", "maestro", "Manfredo@ucol.mx", "Manfredo123")
+
+# IM
+db.crear_usuario("Laura Stanley Gaytán Lugo", "maestro", "Laura@ucol.mx", "Laura123")
+db.crear_usuario("Luis López Moran", "maestro", "LuisLopez@ucol.mx", "LuisLopez123")
+db.crear_usuario("Martha Elizabeth Evangelista Salazar", "maestro", "Martha@ucol.mx", "Martha123")
+db.crear_usuario("Antonio Alfonso Luis Morales", "maestro", "Antonio@ucol.mx", "Antonio123")
+db.crear_usuario("Oswaldo Carrillo Zepeda", "maestro", "Oswaldo@ucol.mx", "Oswaldo123")
+db.crear_usuario("Apolinar González Potes", "maestro", "Apolinar@ucol.mx", "Apolinar123")
+
 def login(correo, contrasena):
     return db.obtener_usuario(correo, contrasena)
 
-# Menú de administrador
-def admin_menu():
-    st.header("Panel de Administrador")
-    opcion = st.selectbox("Elija una opción", ["Añadir Profesor", "Añadir Materia", "Añadir Horario", "Añadir Grupo", 
-                                               "Consultar/Modificar Profesores", "Consultar/Modificar Alumnos", 
-                                               "Consultar/Modificar Grupos", "Consultar/Modificar Materias", 
-                                               "Consultar/Modificar Asistencias"])
+# Horarios 
+horarios_ici = {
+    "Lunes": [("09:15", "11:00", "Métodos Numéricos", "David Alejandro Sierra Andrade"),
+              ("11:00", "13:00", "Programación Funcional", "Walter Alexander Mata López")],
+    "Martes": [("07:00", "08:40", "Sistemas Digitales Embebidos", "Carlos Adrián Bricio Chapula"),
+               ("11:00", "13:00", "Interconexión de Redes", "Juan Antonio Diaz Hernández")],
+    "Miércoles": [("07:00", "08:40", "Estructura de Datos", "Luis Eduardo Moran López"),
+                 ("10:00", "12:00", "Métodos Numéricos", "David Alejandro Sierra Andrade"),
+                 ("12:00", "13:00", "Inglés", "Oscar Octavio Ochoa Zúñiga"),
+                 ("13:00", "15:00", "Programación Funcional", "Walter Alexander Mata López")],
+    "Jueves": [("07:00", "08:40", "Sistemas Digitales Embebidos", "Carlos Adrián Bricio Chapula"),
+               ("09:15", "11:00", "Ecuaciones Diferenciales", "Elizabeth Santiago Hernández"),
+               ("11:00", "13:00", "Interconexión de Redes", "Juan Antonio Diaz Hernández"),
+               ("13:00", "15:00", "Inglés", "Oscar Octavio Ochoa Zúñiga")],
+    "Viernes": [("09:15", "11:00", "Ecuaciones Diferenciales", "Elizabeth Santiago Hernández"),
+                ("11:00", "12:00", "Métodos Numéricos", "David Alejandro Sierra Andrade"),
+                ("13:00", "15:00", "Estructura de Datos", "Luis Eduardo Moran López")]
+}
 
-    if opcion == "Añadir Profesor":
-        nombre = st.text_input("Nombre del Profesor")
-        carrera = st.text_input("Carrera")
-        if st.button("Guardar Profesor"):
-            db.insertar_profesor(nombre, carrera)
-            st.success("Profesor guardado exitosamente")
-    
-    elif opcion == "Añadir Materia":
-        nombre = st.text_input("Nombre de la Materia")
-        profesores = db.obtener_profesores()
-        profesor = st.selectbox("Seleccione un Profesor", [p[1] for p in profesores])
-        profesor_id = [p[0] for p in profesores if p[1] == profesor][0]
-        carrera = st.text_input("Carrera")
-        if st.button("Guardar Materia"):
-            db.insertar_materia(nombre, profesor_id, carrera)
-            st.success("Materia guardada exitosamente")
-    
-    elif opcion == "Añadir Horario":
-        grupos = db.obtener_grupos()
-        grupo = st.selectbox("Seleccione un Grupo", [g[1] for g in grupos])
-        grupo_id = [g[0] for g in grupos if g[1] == grupo][0]
-        
-        materias = db.obtener_materias()
-        materia = st.selectbox("Seleccione una Materia", [m[1] for m in materias])
-        materia_id = [m[0] for m in materias if m[1] == materia][0]
-        
-        profesores = db.obtener_profesores()
-        profesor = st.selectbox("Seleccione un Profesor", [p[1] for p in profesores])
-        profesor_id = [p[0] for p in profesores if p[1] == profesor][0]
-        
-        dia_semana = st.text_input("Día de la Semana")
-        hora_inicio = st.text_input("Hora de Inicio (HH:MM)")
-        hora_fin = st.text_input("Hora de Fin (HH:MM)")
-        if st.button("Guardar Horario"):
-            db.insertar_horario(grupo_id, materia_id, profesor_id, dia_semana, hora_inicio, hora_fin)
-            st.success("Horario guardado exitosamente")
+horarios_iset = {
+    "Lunes": [("07:00", "08:40", "Ecuaciones Diferenciales", "Vazquez Gonzales Cruz Ernesto"),
+              ("09:15", "11:00", "Programación Funcional", "Walter Alexander Mata López"),
+              ("12:00", "14:00", "Inglés", "Luis Daniel Benavides Sanches"),
+              ("14:00", "15:00", "Métodos Numéricos", "Martines Camera Edgar")],
+    "Martes": [("09:15", "11:00", "Ecuaciones Diferenciales", "Vazquez Gonzales Cruz Ernesto"),
+               ("11:00", "12:00", "Inglés", "Luis Daniel Benavides Sanches")],
+    "Miércoles": [("08:00", "08:40", "Ecuaciones Diferenciales", "Vazquez Gonzales Cruz Ernesto"),
+                  ("10:00", "12:00", "Interconexión de Redes", "Juan Antonio Diaz Hernández"),
+                  ("12:00", "14:00", "Métodos Numéricos", "Martines Camera Edgar")],
+    "Jueves": [("09:15", "11:00", "Sistemas Digitales Embebidos", "Carlos Adrián Bricio Chapula"),
+               ("11:00", "13:00", "Estructuras de Datos", "Francisco Manuel Soto Ochoa"),
+               ("13:00", "15:00", "Programación Funcional", "Walter Alexander Mata López")],
+    "Viernes": [("07:00", "08:40", "Sistemas Digitales Embebidos", "Carlos Adrián Bricio Chapula"),
+                ("09:15", "11:00", "Métodos Numéricos", "Martines Camera Edgar"),
+                ("11:00", "13:00", "Interconexión de Redes", "Juan Antonio Diaz Hernández")]
+}
 
-    elif opcion == "Añadir Grupo":
-        nombre = st.text_input("Nombre del Grupo")
-        if st.button("Guardar Grupo"):
-            db.insertar_grupo(nombre)
-            st.success("Grupo guardado exitosamente")
-    
-    # Consultar/Modificar Profesores
-    elif opcion == "Consultar/Modificar Profesores":
-        profesores = db.obtener_profesores()
-        if profesores:
-            profesor_seleccionado = st.selectbox("Seleccione un Profesor", [p[1] for p in profesores])
-            profesor_id = [p[0] for p in profesores if p[1] == profesor_seleccionado][0]
-            nuevo_nombre = st.text_input("Nuevo Nombre", value=profesor_seleccionado)
-            nueva_carrera = st.text_input("Nueva Carrera")
-            
-            if st.button("Modificar Profesor"):
-                db.modificar_profesor(profesor_id, nuevo_nombre, nueva_carrera)
-                st.success("Profesor modificado exitosamente")
+horarios_ime = {
+    "Lunes":[("07:00", "08:40", "Circuitos" , "José Alberto García Jiménez"),
+            ("07:00", "8:40", "Circuitos",  "José Alberto García Jiménez"),
+            ("09:15", "11:00", "Tecnología de los Materiales", "Selene Cárdenas Rodríguez"),
+            ("12:00", "13:00", "Ecuaciones Diferenciales", "Jaime Arroyo Ledesma")],
+    "Martes":[("07:00", "08:40", "Electrónica", "José Alberto García Jiménez"),
+              ("9:15", "11:00", "Dinámica",  "Sergio Llamas Zamorano"),
+              ("11:00", "13:00", "Métodos Numéricos",  "Pablo Armando Alcaraz Valencia"),
+              ("13:00", "14:00", "Ecuaciones Diferenciales",  "Jaime Arroyo Ledesma")],
+    "Miércoles":[("10:00", "12:00", "Métodos Numéricos",  "Pablo Armando Alcaraz Valencia")], 
+     "Jueves":[("07:00", "08:40", "Circuitos", "José Alberto García Jiménez"),
+              ("09:15", "11:02",  "Dinámica",  "Sergio Llamas Zamorano"),
+              ("11:00", "13:00",  "Ingles",  "Oscar Octavio Ochoa Zúñiga"),
+              ("13:00", "14:00",  "Tecnología de los Materiales", "Selene Cárdenas Rodríguez")],
+    "Viernes":[("07:00", "08:40",   "Electrónica",  "José Alberto García Jiménez"),
+               ("10:00", "11:00",  "Ingles",  "Oscar Octavio Ochoa Zúñiga"),
+               ("11:00", "13:00",  "Ecuaciones Diferénciales",  "Jaime Arroyo Ledesma")],
 
-            if st.button("Eliminar Profesor"):
-                db.eliminar_profesor(profesor_id)
-                st.success("Profesor eliminado exitosamente")
-        else:
-            st.warning("No hay profesores disponibles.")
-    
-    # Consultar/Modificar Grupos
-    elif opcion == "Consultar/Modificar Grupos":
-        grupos = db.obtener_grupos()
-        if grupos:
-            grupo_seleccionado = st.selectbox("Seleccione un Grupo", [g[1] for g in grupos])
-            grupo_id = [g[0] for g in grupos if g[1] == grupo_seleccionado][0]
-            nuevo_nombre = st.text_input("Nuevo Nombre del Grupo", value=grupo_seleccionado)
-            
-            if st.button("Modificar Grupo"):
-                db.modificar_grupo(grupo_id, nuevo_nombre)
-                st.success("Grupo modificado exitosamente")
+}
 
-            if st.button("Eliminar Grupo"):
-                db.eliminar_grupo(grupo_id)
-                st.success("Grupo eliminado exitosamente")
-        else:
-            st.warning("No hay grupos disponibles.")
-    
-    # Consultar/Modificar Asistencias
-    elif opcion == "Consultar/Modificar Asistencias":
-        asistencias = db.obtener_asistencias()
-        if asistencias:
-            asistencia_seleccionada = st.selectbox("Seleccione una Asistencia", [f"ID: {a[0]}" for a in asistencias])
-            asistencia_id = [a[0] for a in asistencias if f"ID: {a[0]}" == asistencia_seleccionada][0]
-            nueva_asistencia = st.checkbox("Clase Impartida", value=asistencias[asistencia_id-1][1])
+horarios_im = {
+    "Lunes":[("07:00", "08:00",  "Programacion Web",  "Antonio Alfonso Luis Morales"),
+             ("9:15", "11:00", "Aprendizaje de maquina",  "Luis López Moran"), 
+             ("12:00",  "14:00",  "Escalamiento de redes", "Oswaldo Carrillo Zepeda")],
+    "Martes":[("07:00",  "08:40",  "Ingles",  "Luis Daniel Benavides Sanchez"),
+              ("09:15",  "11:00",  "Interacción humano Computadora","Laura Stanley Gaytán Lugo "),
+              ("11:00",  "12:00",  "Aprendizaje de maquina",  "Luis López Moran"),
+              ("13:00",  "15:00", "Sistemas operativos",  "Apolinar González Potes")],
+    "Miercoles":[("9:15", "11:00", "Base de datos no relaciónales",  "Martha Elizabeth Evangelista Salazar"),
+                 ("12:00",  "14:00", "Escalamiento de redes", "Oswaldo Carrillo Zepeda")],        
+    "Jueves":[("07:00" ,"08:40", "Programación web",  "Antonio Alfonso Luis Morales"),
+              ("10:00", "11:00", "Ingles", "Luis Daniel Benavides Sanchez"),
+              ("12:00", "14:00",  "Aprendizaje de maquina",   "Luis López Moran")], 
+    "Viernes":[("09:15", "11:00", "Sistemas operativos",  "Apolinar González Potes"),
+               ("11:00",  "13:00",  "Base de datos no relacionales",   "Martha Elizabeth Evangelista Salazar"),
+               ("13: 00",  "15:00",  "Interacción humana computadora",   "Laura Stanley Gaytán Lugo")] 
 
-            if st.button("Modificar Asistencia"):
-                db.modificar_asistencia(asistencia_id, nueva_asistencia)
-                st.success("Asistencia modificada exitosamente")
-        else:
-            st.warning("No hay asistencias disponibles.")
 
-# Menú de maestro
-def maestro_menu(usuario):
-    st.header(f"Panel de Maestro - {usuario[1]}")
-    materias = db.obtener_materias()
-    materia_seleccionada = st.selectbox("Seleccione una Materia", [m[1] for m in materias])
-    materia_id = [m[0] for m in materias if m[1] == materia_seleccionada][0]
-    
-    alumnos = db.obtener_alumnos()
-    alumno_seleccionado = st.multiselect("Seleccione los alumnos presentes", [a[1] for a in alumnos])
-    alumnos_presentes = [a[0] for a in alumnos if a[1] in alumno_seleccionado]
-    
-    if st.button("Registrar Asistencia"):
-        for alumno_id in alumnos_presentes:
-            db.registrar_asistencia(usuario[0], materia_id, True)
-        st.success("Asistencia registrada exitosamente")
+}
 
-# Panel del alumno
-def alumno_menu(usuario):
-    st.header(f"Panel de Alumno - {usuario[1]}")
-    asistencias = db.obtener_asistencias_por_alumno(usuario[0])
-    if asistencias:
-        for asistencia in asistencias:
-            st.write(f"Materia: {asistencia[1]} - Asistencia: {'Sí' if asistencia[2] else 'No'}")
-    else:
-        st.warning("No hay asistencias registradas para mostrar.")
 
-# Sistema ogin
+
+def mostrar_horarios(carrera, dia_semana):
+    st.write(f"Mostrando horarios para {dia_semana} de la carrera {carrera}")  
+
+    horarios = []
+    if carrera == "ICI":
+        horarios = horarios_ici.get(dia_semana, [])
+    elif carrera == "ISET":
+        horarios = horarios_iset.get(dia_semana, [])
+    elif carrera == "IME":
+        horarios = horarios_ime.get(dia_semana, [])
+    elif carrera == "IM":
+        horarios = horarios_im.get(dia_semana, [])
+
+    if not horarios:
+        st.warning(f"No hay horarios disponibles para {dia_semana}.")
+        return
+
+
+    for hora_inicio, hora_fin, materia, profesor in horarios:
+        col_horario, col_materia, col_asistencia = st.columns([1, 3, 1])
+        col_horario.write(f"{hora_inicio} - {hora_fin}")
+        col_materia.markdown(f"**{materia} - {profesor}**")
+        asistencia = col_asistencia.checkbox(f"Asistió", key=f"{dia_semana}-{hora_inicio}-{hora_fin}")
+        if st.button(f"Registrar ({hora_inicio}-{hora_fin})", key=f"btn-{dia_semana}-{hora_inicio}-{hora_fin}"):
+            presente = True if asistencia else False
+            db.registrar_asistencia_profesor(profesor, dia_semana, hora_inicio, presente)
+            st.success(f"Asistencia registrada para {materia}.")
+
+# Jefe de Grupo
+def admin_menu(usuario):
+    st.header(f"Panel de Asistencia - {usuario[1]}")
+
+    fecha_seleccionada = st.date_input("Selecciona un día", value=datetime.today(), min_value=datetime.today() - timedelta(days=30), max_value=datetime.today() + timedelta(days=30))
+    dia_semana = fecha_seleccionada.strftime("%A")  
+
+    dias_semana_traducidos = {
+        "Monday": "Lunes",
+        "Tuesday": "Martes",
+        "Wednesday": "Miércoles",
+        "Thursday": "Jueves",
+        "Friday": "Viernes",
+        "Saturday": "Sábado",
+        "Sunday": "Domingo"
+    }
+    dia_semana_es = dias_semana_traducidos.get(dia_semana, dia_semana)  
+
+    st.write(f"Día seleccionado: {dia_semana_es}")  
+    if usuario[1] == "Miguel Ángel Ortiz Torres":
+        mostrar_horarios("ICI", dia_semana_es)
+    elif usuario[1] == "Cesar Eduardo Zepeda Gorrocino":
+        mostrar_horarios("IME", dia_semana_es)
+    elif usuario[1] == "Michelle Rosales Sánchez":
+        mostrar_horarios("IM", dia_semana_es)
+    elif usuario[1] == "Panfilo Gutierrez Alvarez Diaz":
+        mostrar_horarios("ISET", dia_semana_es)
+
+# Login
 if 'usuario' not in st.session_state:
     st.session_state['usuario'] = None
 
@@ -160,7 +194,6 @@ if st.session_state['usuario'] is None:
         usuario = login(correo, contrasena)
         if usuario:
             st.session_state['usuario'] = usuario
-            st.set_query_params()
         else:
             st.error("Credenciales incorrectas")
 else:
@@ -168,14 +201,8 @@ else:
     st.success(f"Bienvenido {usuario[1]} ({usuario[2]})")
 
     if usuario[2] == "admin":
-        admin_menu()
-    elif usuario[2] == "maestro":
-        maestro_menu(usuario)
-    elif usuario[2] == "alumno":
-        alumno_menu(usuario)
+        admin_menu(usuario)
 
-# Cerrar sesión
 if st.session_state['usuario'] is not None:
     if st.button("Cerrar sesión"):
         st.session_state['usuario'] = None
-        st.set_query_params()
